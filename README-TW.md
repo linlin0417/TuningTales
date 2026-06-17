@@ -1,37 +1,50 @@
-# TuningTales
-
 [English](README.md) | [繁體中文](README-TW.md)
 
-TuningTales 是一款專為微調對話型 AI 模型（如 LLaMA, Qwen, Gemini 等）設計的輕量級資料集生成與管理桌面應用程式。
+# TuningTales
 
-## 特色功能
-- 🤖 **支援多種 LLM 提供者**：原生支援 Ollama (本地模型)、Gemini API 與 OpenAI API。
-- 🎭 **角色庫管理**：建立並儲存不同的 AI 角色卡（包含 System Prompt、性格設定與範例對話）。
-- 📝 **計畫導向循環生成 (Plan-based Looping)**：透過輸入「對話計畫大綱」，引擎會自動推進情節，生成高達數千行的連貫對話，並利用滑動視窗 (Sliding Window) 避免模型跳針或遺忘設定。
-- 📦 **支援 OpenAI Chat 格式**：完美相容並匯出為主流行業標準的 JSONL 訓練格式。
-- 🎛️ **輕量現代化 GUI**：採用玻璃擬態與深色模式設計，並透過 Electron 確保流暢的桌面原生體驗。
+專為微調 AI 模型打造的「角色扮演對話資料集」生成與混合工具 (Electron + React)。
+這是一個輕量、現代化的跨平台桌面應用程式，讓你可以輕鬆定義角色性格、提供故事大綱，並透過 Ollama, Gemini, 或 OpenAI 自動推演與生成可用於 LLM 微調的高品質對話資料集 (JSONL/JSON)。
 
-## 快速開始
+請只在符合各家 API 使用規範的情況下生成與使用資料。
 
-### 開發與本地測試
-1. 安裝依賴套件：
-```bash
-npm install
-```
-2. 啟動本地開發伺服器與 Electron：
+## 主要特色
+- **強大的生成引擎**：基於滑動視窗防呆機制與情節點拆解，支援生成至多 2000 行長篇連貫對話而不會陷入跳針。
+- **多模型供應商支援**：內建支援 Ollama (本地 11434 埠)、Google Gemini API 以及 OpenAI API。
+- **現代化介面**：採用 React + Vite 打造的深色玻璃擬態 (Glassmorphism) GUI，提供直覺的設定與生成即時進度顯示。
+- **資料集混合器 (Mixer)**：內建資料集追加與比例調整功能，確保你的微調資料集能讓模型學習到更精確的角色扮演權重。
+
+## 安裝方式
+請確保您的電腦上已經安裝了 [Node.js](https://nodejs.org/) (建議 v18 或以上版本)。
+
+1. 克隆此專案：
+   ```bash
+   git clone https://github.com/your-username/TuningTales.git
+   cd TuningTales
+   ```
+
+2. 安裝依賴：
+   ```bash
+   npm install
+   ```
+
+## 快速啟動
+在終端機中執行以下指令即可開啟 TuningTales 桌面應用程式：
+
 ```bash
 npm run dev
 ```
 
-### 打包與建置
-建置本地平台的執行檔：
+進入程式後，您可以：
+1. 到 **Settings** 分頁填寫您的 API Keys（例如 Gemini 或 OpenAI），或是選擇使用本機的 Ollama。
+2. 到 **Characters** 分頁建立並管理您的角色卡片，包含 System Prompt 與 Personality。
+3. 到 **Generator** 分頁輸入您的計畫與目標行數，點擊生成即可即時查看 AI 推演的對話過程！
+
+## 打包發布
+TuningTales 支援透過 GitHub Actions 自動發布版本，但您也可以在本地端進行打包測試：
 ```bash
 npm run build
 ```
+編譯完成後，安裝檔將會產生在 `release/` 目錄下。
 
-## 技術堆疊
-- 前端：React + Vite + TypeScript + Vanilla CSS
-- 後端：Electron Main Process (Node.js)
-
-## 授權條款
-MIT License
+## 致謝與開源授權
+本專案採用開源授權，歡迎社群貢獻與發送 Pull Request！

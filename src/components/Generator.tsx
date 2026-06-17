@@ -24,9 +24,9 @@ export function Generator() {
     window.ipcRenderer.on('generator-error', (_: any, err: any) => setError(err))
 
     return () => {
-      window.ipcRenderer.off('generator-status')
-      window.ipcRenderer.off('generator-update')
-      window.ipcRenderer.off('generator-error')
+      window.ipcRenderer.removeAllListeners('generator-status')
+      window.ipcRenderer.removeAllListeners('generator-update')
+      window.ipcRenderer.removeAllListeners('generator-error')
     }
   }, [])
 

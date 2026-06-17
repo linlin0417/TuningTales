@@ -5,8 +5,10 @@ import { useTranslation } from '../i18n'
 export interface Character {
   id: string
   name: string
+  highPriorityPrompt?: string
   systemPrompt: string
   personality: string
+  lowPriorityPrompt?: string
   exampleDialogues: string
 }
 
@@ -45,7 +47,7 @@ export function Characters() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>{t('char.library')}</h2>
         {!editingChar && (
-          <button onClick={() => setEditingChar({ id: '', name: '', systemPrompt: '', personality: '', exampleDialogues: '' })}>
+          <button onClick={() => setEditingChar({ id: '', name: '', highPriorityPrompt: '', systemPrompt: '', personality: '', lowPriorityPrompt: '', exampleDialogues: '' })}>
             {t('char.create')}
           </button>
         )}
@@ -60,6 +62,15 @@ export function Characters() {
               value={editingChar.name} 
               onChange={e => setEditingChar({...editingChar, name: e.target.value})} 
               placeholder={t('char.name_placeholder')}
+            />
+          </div>
+          <div className="input-group">
+            <label>{t('char.high_priority')}</label>
+            <textarea 
+              rows={2}
+              value={editingChar.highPriorityPrompt || ''} 
+              onChange={e => setEditingChar({...editingChar, highPriorityPrompt: e.target.value})} 
+              placeholder={t('char.high_priority_placeholder')}
             />
           </div>
           <div className="input-group">
@@ -78,6 +89,15 @@ export function Characters() {
               value={editingChar.personality} 
               onChange={e => setEditingChar({...editingChar, personality: e.target.value})} 
               placeholder={t('char.personality_placeholder')}
+            />
+          </div>
+          <div className="input-group">
+            <label>{t('char.low_priority')}</label>
+            <textarea 
+              rows={2}
+              value={editingChar.lowPriorityPrompt || ''} 
+              onChange={e => setEditingChar({...editingChar, lowPriorityPrompt: e.target.value})} 
+              placeholder={t('char.low_priority_placeholder')}
             />
           </div>
           <div className="input-group">

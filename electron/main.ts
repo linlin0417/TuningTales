@@ -60,14 +60,28 @@ app.whenReady().then(() => {
   ipcMain.handle('get-characters', () => getCharacters())
   ipcMain.handle('save-characters', (_, characters) => saveCharacters(characters))
   
+  let abortController: AbortController | null = null
+
   ipcMain.handle('generate-plan', async (_, options) => {
     return await generatePlanWithAI(options)
   })
 
   ipcMain.on('start-generation', (event, options) => {
-    generateDialogue(options, event).catch(e => {
+    if (abortController) abortController.abort()
+    abortController = new AbortController()
+    
+    generateDialogue(options, event, abortController.signal).catch(e => {
+      if (e.name === 'AbortError') return
       event.sender.send('generator-error', e.toString())
     })
+  })
+
+  ipcMain.on('stop-generation', (event) => {
+    if (abortController) {
+      abortController.abort()
+      abortController = null
+    }
+    event.sender.send('generator-status', { step: 'done', message: 'Generation stopped by user.' })
   })
   
   createWindow()

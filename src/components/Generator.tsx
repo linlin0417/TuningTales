@@ -73,6 +73,10 @@ export function Generator() {
     })
   }
 
+  const handleStop = () => {
+    window.ipcRenderer.send('stop-generation')
+  }
+
   return (
     <div style={{ display: 'flex', gap: '2rem', height: '100%' }}>
       {/* Configuration Panel */}
@@ -127,12 +131,25 @@ export function Generator() {
           />
         </div>
 
-        <button 
-          onClick={handleStart} 
-          disabled={!plan || !selectedCharId || status?.step === 'generating' || status?.step === 'planning'}
-        >
-          {status?.step === 'generating' || status?.step === 'planning' ? t('gen.btn_generating') : t('gen.btn_start')}
-        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button 
+            style={{ flex: 1 }}
+            onClick={handleStart} 
+            disabled={!plan || !selectedCharId || status?.step === 'generating' || status?.step === 'planning'}
+          >
+            {status?.step === 'generating' || status?.step === 'planning' ? t('gen.btn_generating') : t('gen.btn_start')}
+          </button>
+
+          {(status?.step === 'generating' || status?.step === 'planning') && (
+            <button 
+              className="secondary"
+              style={{ background: 'var(--danger)', color: 'white', border: 'none' }}
+              onClick={handleStop}
+            >
+              {t('gen.btn_stop')}
+            </button>
+          )}
+        </div>
 
         {error && <div style={{ color: 'var(--danger)', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>{error}</div>}
       </div>
@@ -142,9 +159,22 @@ export function Generator() {
         <h3 style={{ marginTop: 0 }}>{t('gen.preview')}</h3>
         
         {status && (
-          <div style={{ padding: '0.5rem', background: 'var(--bg-secondary)', borderRadius: '4px', marginBottom: '1rem' }}>
-            <strong style={{ color: 'var(--accent-secondary)' }}>{t('gen.status')}</strong> {status.message}
-            {status.progress !== undefined && ` (${status.progress} / ${status.total})`}
+          <div style={{ padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {status.progress !== undefined && status.total ? (
+              <div style={{ 
+                width: '50px', height: '50px', borderRadius: '50%', 
+                background: `conic-gradient(var(--accent-primary) ${(status.progress/status.total)*360}deg, var(--bg-tertiary) 0deg)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <div style={{ width: '40px', height: '40px', background: 'var(--bg-secondary)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                  {Math.round((status.progress/status.total)*100)}%
+                </div>
+              </div>
+            ) : null}
+            <div style={{ flex: 1 }}>
+              <strong style={{ color: 'var(--accent-secondary)' }}>{t('gen.status')}</strong> {status.message}
+            </div>
           </div>
         )}
 

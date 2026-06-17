@@ -19,8 +19,10 @@ export interface Settings {
 export interface Character {
   id: string
   name: string
+  highPriorityPrompt?: string
   systemPrompt: string
   personality: string
+  lowPriorityPrompt?: string
   exampleDialogues: string
 }
 

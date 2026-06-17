@@ -67,11 +67,11 @@ function MainApp() {
         display: 'flex',
         flexDirection: 'column'
       }}>
-        <div className="glass-panel animate-fade-in" style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
-          {activeTab === 'generator' && <Generator />}
-          {activeTab === 'characters' && <Characters />}
-          {activeTab === 'mixer' && <Mixer />}
-          {activeTab === 'settings' && <Settings />}
+        <div className="glass-panel animate-fade-in" style={{ flex: 1, padding: '2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: activeTab === 'generator' ? 'block' : 'none', flex: 1, height: '100%' }}><Generator /></div>
+          <div style={{ display: activeTab === 'characters' ? 'block' : 'none', flex: 1, height: '100%' }}><Characters /></div>
+          <div style={{ display: activeTab === 'mixer' ? 'block' : 'none', flex: 1, height: '100%' }}><Mixer /></div>
+          <div style={{ display: activeTab === 'settings' ? 'block' : 'none', flex: 1, height: '100%' }}><Settings /></div>
         </div>
       </div>
     </div>

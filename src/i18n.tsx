@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext } from 'react'
 
 export type Language = 'en' | 'tw'
 
@@ -27,10 +27,14 @@ export const dictionary: Record<Language, Record<string, string>> = {
     'char.new': 'New Character',
     'char.name': 'Name',
     'char.name_placeholder': 'E.g., Alice (Tech Support)',
+    'char.high_priority': 'High Priority Prompt (Strict Rules)',
+    'char.high_priority_placeholder': 'E.g., Never mention you are an AI.',
     'char.system_prompt': 'System Prompt (Core Persona)',
     'char.system_prompt_placeholder': 'You are Alice, a helpful tech support...',
     'char.personality': 'Personality / Guidelines',
     'char.personality_placeholder': 'Be polite, sometimes make programming jokes.',
+    'char.low_priority': 'Low Priority (Supplementary Details)',
+    'char.low_priority_placeholder': 'E.g., Occasionally use emojis at the end of sentences.',
     'char.examples': 'Example Dialogues',
     'char.examples_placeholder': 'User: Help me! AI: Did you try turning it off and on again?',
     'char.save': 'Save',
@@ -50,6 +54,7 @@ export const dictionary: Record<Language, Record<string, string>> = {
     'gen.plan': 'Conversation Plan / Outline',
     'gen.plan_placeholder': 'e.g. 1. User complains about a bug. 2. AI comforts the user. 3. AI proposes a solution. 4. User tests it and fails. 5. AI finds the root cause...',
     'gen.btn_start': 'Start Generation',
+    'gen.btn_stop': 'Stop Generation',
     'gen.btn_generating': 'Generating...',
     'gen.preview': 'Live Preview',
     'gen.status': 'Status:',
@@ -92,10 +97,14 @@ export const dictionary: Record<Language, Record<string, string>> = {
     'char.new': '新角色',
     'char.name': '名稱',
     'char.name_placeholder': '例如：愛麗絲 (技術支援)',
+    'char.high_priority': '高層級提示詞 (強制規則)',
+    'char.high_priority_placeholder': '例如：你絕對不可以提到自己是 AI。',
     'char.system_prompt': '系統提示詞 (核心人設)',
     'char.system_prompt_placeholder': '你是愛麗絲，一位樂於助人的技術支援人員...',
     'char.personality': '個性與準則',
     'char.personality_placeholder': '保持禮貌，偶爾開個程式設計的玩笑。',
+    'char.low_priority': '低層級補充 (次要設定)',
+    'char.low_priority_placeholder': '例如：對話最後加上個可愛的表情符號。',
     'char.examples': '對話範例',
     'char.examples_placeholder': '使用者：救命啊！ AI：你有試過重開機嗎？',
     'char.save': '儲存',
@@ -115,6 +124,7 @@ export const dictionary: Record<Language, Record<string, string>> = {
     'gen.plan': '對話計畫與大綱',
     'gen.plan_placeholder': '例如：1. 使用者抱怨遇到 bug。 2. AI 安撫使用者。 3. AI 提出解決方案。 4. 使用者測試後失敗。 5. AI 找出根本原因...',
     'gen.btn_start': '開始生成',
+    'gen.btn_stop': '停止生成',
     'gen.btn_generating': '生成中...',
     'gen.preview': '即時預覽',
     'gen.status': '狀態：',

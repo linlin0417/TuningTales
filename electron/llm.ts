@@ -1,6 +1,6 @@
 import { getSettings } from './store'
 
-export async function callLLM(messages: any[], systemPrompt: string, temperature = 0.7) {
+export async function callLLM(messages: any[], systemPrompt: string, temperature = 0.7, signal?: AbortSignal) {
   const settings = getSettings()
   const provider = settings.defaultProvider
   const model = settings.defaultModelName
@@ -11,7 +11,8 @@ export async function callLLM(messages: any[], systemPrompt: string, temperature
     const res = await fetch(`${settings.ollamaHost}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model, messages: fullMessages, stream: false, options: { temperature } })
+      body: JSON.stringify({ model, messages: fullMessages, stream: false, options: { temperature } }),
+      signal
     })
     const data: any = await res.json()
     return data.message.content
@@ -24,7 +25,8 @@ export async function callLLM(messages: any[], systemPrompt: string, temperature
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${settings.openaiKey}`
       },
-      body: JSON.stringify({ model, messages: fullMessages, temperature })
+      body: JSON.stringify({ model, messages: fullMessages, temperature }),
+      signal
     })
     const data: any = await res.json()
     return data.choices[0].message.content
@@ -42,7 +44,8 @@ export async function callLLM(messages: any[], systemPrompt: string, temperature
         system_instruction: { parts: { text: systemPrompt } },
         contents: geminiMessages,
         generationConfig: { temperature }
-      })
+      }),
+      signal
     })
     const data: any = await res.json()
     return data.candidates[0].content.parts[0].text

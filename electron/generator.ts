@@ -4,7 +4,16 @@ import path from 'node:path'
 import { app } from 'electron'
 import type { Character } from './store'
 
-export async function generateDialogue(options: { character: Character, plan: string, targetLines: number, outputPath: string, generationLanguage?: string }, event: any) {
+function safeParseJSON(str: string) {
+  try {
+    return JSON.parse(str)
+  } catch (e) {
+    const fixedStr = str.replace(/「/g, '"').replace(/」/g, '"').replace(/```json/gi, '').replace(/```/g, '').trim()
+    return JSON.parse(fixedStr)
+  }
+}
+
+export async function generateDialogue(options: { character: Character, plan: string, targetLines: number, outputPath: string, generationLanguage?: string }, event: any, signal?: AbortSignal) {
   const { character, plan, targetLines, outputPath, generationLanguage = 'tw' } = options
   const defaultPath = path.join(app.getPath('userData'), `dataset_${Date.now()}.jsonl`)
   const savePath = outputPath || defaultPath
@@ -15,10 +24,12 @@ export async function generateDialogue(options: { character: Character, plan: st
   
   let plotPoints: string[] = []
   try {
-     const planRes = await callLLM([{ role: 'user', content: planPrompt }], 'You are a helpful assistant that outputs only JSON arrays.')
-     const jsonStr = planRes.replace(/```json/gi, '').replace(/```/g, '').trim()
-     plotPoints = JSON.parse(jsonStr)
-  } catch (e) {
+     if (signal?.aborted) return
+     const planRes = await callLLM([{ role: 'user', content: planPrompt }], 'You are a helpful assistant that outputs only JSON arrays.', 0.7, signal)
+     plotPoints = safeParseJSON(planRes)
+     if (!Array.isArray(plotPoints)) throw new Error('Not an array')
+  } catch (e: any) {
+     if (e.name === 'AbortError') return
      console.error('Failed to parse plot points', e)
      plotPoints = [plan] 
   }
@@ -52,28 +63,46 @@ Return ONLY valid JSON in this exact format:
   {"role": "assistant", "content": "..."}
 ]`
 
-      try {
-        const res = await callLLM(
-          [...recentHistory, { role: 'user', content: generationPrompt }], 
-          character.systemPrompt + "\n\n" + character.personality
-        )
-        const jsonStr = res.replace(/```json/gi, '').replace(/```/g, '').trim()
-        const newTurns = JSON.parse(jsonStr)
-        
-        dialogueHistory.push(...newTurns)
-        linesInThisPlot += newTurns.length
-        totalLines += newTurns.length
-        
-        // Save to file incrementally or at the end. For JSONL format of complete conversation:
-        // In OpenAI format, each line is a full conversation object `{"messages": [...]}`
-        // But for continuous generation, maybe we write the final conversation at the end.
-        // Wait, if it's 2000 lines, a single line in JSONL with 2000 messages is HUGE. But valid.
-        
-        event.sender.send('generator-update', { history: dialogueHistory })
-      } catch (e: any) {
-        console.error('Generation error', e)
-        event.sender.send('generator-error', 'Error generating turn: ' + e.message)
-        break // Try to move to next plot point or stop
+      if (signal?.aborted) return
+
+      let success = false
+      let attempts = 0
+      
+      const fullSystemPrompt = [
+        character.highPriorityPrompt,
+        character.systemPrompt,
+        character.personality,
+        character.lowPriorityPrompt
+      ].filter(Boolean).join('\n\n')
+
+      while (!success && attempts < 3) {
+        if (signal?.aborted) return
+        attempts++
+        try {
+          const res = await callLLM(
+            [...recentHistory, { role: 'user', content: generationPrompt }], 
+            fullSystemPrompt,
+            0.7,
+            signal
+          )
+          const newTurns = safeParseJSON(res)
+          
+          if (!Array.isArray(newTurns)) throw new Error('Expected JSON array')
+          
+          dialogueHistory.push(...newTurns)
+          linesInThisPlot += newTurns.length
+          totalLines += newTurns.length
+          
+          event.sender.send('generator-update', { history: dialogueHistory })
+          success = true
+        } catch (e: any) {
+          if (e.name === 'AbortError') return
+          console.error(`Generation error (Attempt ${attempts}/3)`, e)
+          if (attempts >= 3) {
+            event.sender.send('generator-error', 'Error generating turn after 3 attempts: ' + e.message)
+            return // Give up completely if 3 attempts fail
+          }
+        }
       }
     }
   }
@@ -96,12 +125,18 @@ Return ONLY valid JSON in this exact format:
 export async function generatePlanWithAI(options: { character: Character, topic: string, generationLanguage: string }): Promise<string> {
   const { character, topic, generationLanguage = 'tw' } = options
   
+  const fullSystemPrompt = [
+    character.highPriorityPrompt,
+    character.systemPrompt,
+    character.personality,
+    character.lowPriorityPrompt
+  ].filter(Boolean).join('\n\n')
+
   const prompt = `You are a creative dialogue planner. The user wants to generate a conversation outline based on the following topic:
 "${topic}"
 
 The AI assistant's persona is defined as follows:
-System Prompt: ${character.systemPrompt}
-Personality: ${character.personality}
+${fullSystemPrompt}
 
 Please generate a step-by-step dialogue plan (outline).
 Format Requirements:

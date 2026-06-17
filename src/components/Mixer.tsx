@@ -3,7 +3,7 @@ import { useTranslation } from '../i18n'
 
 export function Mixer() {
   const { t } = useTranslation()
-  const [targetRatio, setTargetRatio] = useState<number>(70)
+  const [rpRatio, setRpRatio] = useState<number>(70)
   
   return (
     <div>
@@ -14,17 +14,17 @@ export function Mixer() {
         <h3>{t('mix.config')}</h3>
         
         <div className="input-group">
-          <label>{t('mix.ratio')}</label>
+          <label>{t('mix.ratio')} ({rpRatio}%)</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <input 
               type="range" 
-              min="10" 
-              max="90" 
-              value={targetRatio} 
-              onChange={e => setTargetRatio(Number(e.target.value))}
+              min="0" 
+              max="100" 
+              value={rpRatio} 
+              onChange={e => setRpRatio(Number(e.target.value))}
               style={{ flex: 1 }}
             />
-            <span style={{ fontWeight: 600 }}>{targetRatio}% {t('mix.roleplay')} {100 - targetRatio}% {t('mix.general')}</span>
+            <span style={{ fontWeight: 600 }}>{rpRatio}% {t('mix.roleplay')} {100 - rpRatio}% {t('mix.general')}</span>
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             {t('mix.ratio_desc')}

@@ -49,4 +49,4 @@ npm run build
 After building, the installers will be available in the `release/` directory.
 
 ## Credits & License
-This project is open-source. Community contributions and Pull Requests are welcome!
+Apache-2.0

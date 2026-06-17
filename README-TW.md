@@ -50,4 +50,4 @@ npm run build
 編譯完成後，安裝檔將會產生在 `release/` 目錄下。
 
 ## 致謝與開源授權
-本專案採用開源授權，歡迎社群貢獻與發送 Pull Request！
+Apache-2.0

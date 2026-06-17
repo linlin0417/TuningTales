@@ -4,7 +4,8 @@ import { Settings } from './components/Settings'
 import { Characters } from './components/Characters'
 import { Generator } from './components/Generator'
 import { Mixer } from './components/Mixer'
-import { I18nProvider, useTranslation } from './i18n'
+import { useTranslation } from './i18n'
+import { I18nProvider } from './I18nProvider'
 import './App.css'
 
 function MainApp() {

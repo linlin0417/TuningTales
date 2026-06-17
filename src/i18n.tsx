@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
-type Language = 'en' | 'tw'
+export type Language = 'en' | 'tw'
 
-const dictionary: Record<Language, Record<string, string>> = {
+export const dictionary: Record<Language, Record<string, string>> = {
   en: {
     'nav.generator': 'Generator',
     'nav.characters': 'Characters',
@@ -43,6 +43,10 @@ const dictionary: Record<Language, Record<string, string>> = {
     'gen.select_char': 'Select Character Persona',
     'gen.target_lines': 'Target Conversation Turns',
     'gen.target_lines_desc': 'Max 2000 lines. The system will loop based on the plan to reach this target.',
+    'gen.plan_topic': 'Plan Generation Prompt / Topic',
+    'gen.plan_topic_placeholder': 'e.g. User is frustrated about a bug, and the AI comforts them...',
+    'gen.btn_generate_plan': 'Generate Plan with AI',
+    'gen.generating_plan': 'Generating Plan...',
     'gen.plan': 'Conversation Plan / Outline',
     'gen.plan_placeholder': 'e.g. 1. User complains about a bug. 2. AI comforts the user. 3. AI proposes a solution. 4. User tests it and fails. 5. AI finds the root cause...',
     'gen.btn_start': 'Start Generation',
@@ -104,6 +108,10 @@ const dictionary: Record<Language, Record<string, string>> = {
     'gen.select_char': '選擇角色設定',
     'gen.target_lines': '目標對話輪數',
     'gen.target_lines_desc': '最大 2000 輪。系統將根據對話計畫循環生成以達到此目標。',
+    'gen.plan_topic': '對話主題 (供 AI 生成計畫使用)',
+    'gen.plan_topic_placeholder': '例如：使用者剛下班心情不好，想要人安慰...',
+    'gen.btn_generate_plan': '使用 AI 生成計畫',
+    'gen.generating_plan': '計畫生成中...',
     'gen.plan': '對話計畫與大綱',
     'gen.plan_placeholder': '例如：1. 使用者抱怨遇到 bug。 2. AI 安撫使用者。 3. AI 提出解決方案。 4. 使用者測試後失敗。 5. AI 找出根本原因...',
     'gen.btn_start': '開始生成',
@@ -127,27 +135,13 @@ const dictionary: Record<Language, Record<string, string>> = {
   }
 }
 
-interface I18nContextProps {
+export interface I18nContextProps {
   lang: Language
   setLang: (lang: Language) => void
   t: (key: string) => string
 }
 
-const I18nContext = createContext<I18nContextProps | null>(null)
-
-export function I18nProvider({ children, initialLang = 'en' }: { children: React.ReactNode, initialLang?: Language }) {
-  const [lang, setLang] = useState<Language>(initialLang)
-
-  const t = (key: string) => {
-    return dictionary[lang]?.[key] || key
-  }
-
-  return (
-    <I18nContext.Provider value={{ lang, setLang, t }}>
-      {children}
-    </I18nContext.Provider>
-  )
-}
+export const I18nContext = createContext<I18nContextProps | null>(null)
 
 export function useTranslation() {
   const ctx = useContext(I18nContext)

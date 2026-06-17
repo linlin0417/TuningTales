@@ -6,6 +6,8 @@ export function Generator() {
   const { t } = useTranslation()
   const [characters, setCharacters] = useState<Character[]>([])
   const [selectedCharId, setSelectedCharId] = useState<string>('')
+  const [planTopic, setPlanTopic] = useState<string>('')
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState<boolean>(false)
   const [plan, setPlan] = useState<string>('')
   const [targetLines, setTargetLines] = useState<number>(200)
   const [generationLanguage, setGenerationLanguage] = useState<string>('tw')
@@ -36,6 +38,25 @@ export function Generator() {
       window.ipcRenderer.removeAllListeners('generator-error')
     }
   }, [])
+
+  const handleGeneratePlan = async () => {
+    if (!planTopic || !selectedCharId) return
+    setIsGeneratingPlan(true)
+    setError('')
+    try {
+      const character = characters.find(c => c.id === selectedCharId)
+      const generatedPlan = await window.ipcRenderer.invoke('generate-plan', {
+        character,
+        topic: planTopic,
+        generationLanguage
+      })
+      setPlan(generatedPlan)
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setIsGeneratingPlan(false)
+    }
+  }
 
   const handleStart = () => {
     setError('')
@@ -74,6 +95,26 @@ export function Generator() {
             min={10} max={2000}
           />
           <small style={{ color: 'var(--text-secondary)' }}>{t('gen.target_lines_desc')}</small>
+        </div>
+
+        <div className="input-group">
+          <label>{t('gen.plan_topic')}</label>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input 
+              style={{ flex: 1 }}
+              type="text" 
+              value={planTopic} 
+              onChange={e => setPlanTopic(e.target.value)} 
+              placeholder={t('gen.plan_topic_placeholder')}
+            />
+            <button 
+              className="secondary" 
+              onClick={handleGeneratePlan} 
+              disabled={isGeneratingPlan || !planTopic || !selectedCharId}
+            >
+              {isGeneratingPlan ? t('gen.generating_plan') : t('gen.btn_generate_plan')}
+            </button>
+          </div>
         </div>
 
         <div className="input-group" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { getSettings, saveSettings, getCharacters, saveCharacters } from './store'
-import { generateDialogue } from './generator'
+import { generateDialogue, generatePlanWithAI } from './generator'
 
 // The built directory structure
 //
@@ -60,6 +60,10 @@ app.whenReady().then(() => {
   ipcMain.handle('get-characters', () => getCharacters())
   ipcMain.handle('save-characters', (_, characters) => saveCharacters(characters))
   
+  ipcMain.handle('generate-plan', async (_, options) => {
+    return await generatePlanWithAI(options)
+  })
+
   ipcMain.on('start-generation', (event, options) => {
     generateDialogue(options, event).catch(e => {
       event.sender.send('generator-error', e.toString())

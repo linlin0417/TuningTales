@@ -92,3 +92,29 @@ Return ONLY valid JSON in this exact format:
 
   event.sender.send('generator-status', { step: 'done', message: 'Generation complete!' })
 }
+
+export async function generatePlanWithAI(options: { character: Character, topic: string, generationLanguage: string }): Promise<string> {
+  const { character, topic, generationLanguage = 'tw' } = options
+  
+  const prompt = `You are a creative dialogue planner. The user wants to generate a conversation outline based on the following topic:
+"${topic}"
+
+The AI assistant's persona is defined as follows:
+System Prompt: ${character.systemPrompt}
+Personality: ${character.personality}
+
+Please generate a step-by-step dialogue plan (outline).
+Format Requirements:
+1. It MUST be a numbered list (e.g. 1. 2. 3.).
+2. Generate exactly 5 to 10 points.
+3. Only output the outline itself, no introductory or concluding remarks.
+4. Output language must be: ${generationLanguage}.`
+
+  try {
+    const res = await callLLM([{ role: 'user', content: prompt }], 'You are a dialogue planner that outputs strictly numbered lists.')
+    return res.trim()
+  } catch (e: any) {
+    console.error('Plan generation error', e)
+    throw new Error('Failed to generate plan: ' + e.message)
+  }
+}

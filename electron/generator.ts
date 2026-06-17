@@ -4,14 +4,14 @@ import path from 'node:path'
 import { app } from 'electron'
 import type { Character } from './store'
 
-export async function generateDialogue(options: { character: Character, plan: string, targetLines: number, outputPath: string }, event: any) {
-  const { character, plan, targetLines, outputPath } = options
+export async function generateDialogue(options: { character: Character, plan: string, targetLines: number, outputPath: string, generationLanguage?: string }, event: any) {
+  const { character, plan, targetLines, outputPath, generationLanguage = 'tw' } = options
   const defaultPath = path.join(app.getPath('userData'), `dataset_${Date.now()}.jsonl`)
   const savePath = outputPath || defaultPath
 
   event.sender.send('generator-status', { step: 'planning', message: 'Breaking down plan into plot points...' })
   
-  const planPrompt = `Please break down the following dialogue plan into 5 to 10 distinct plot points or events. Return ONLY a JSON array of strings, nothing else. \n\nPlan: ${plan}`
+  const planPrompt = `Please break down the following dialogue plan into 5 to 10 distinct plot points or events. Return ONLY a JSON array of strings, nothing else. Generation language must be: ${generationLanguage}. \n\nPlan: ${plan}`
   
   let plotPoints: string[] = []
   try {
@@ -44,7 +44,7 @@ export async function generateDialogue(options: { character: Character, plan: st
       const recentHistory = dialogueHistory.slice(-windowSize)
       
       const generationPrompt = `[Current Plot Point: ${currentObjective}]
-Based on the current plot point and the character's persona, continue the conversation.
+Based on the current plot point and the character's persona, continue the conversation in ${generationLanguage}.
 Generate exactly 1 turn for the user and 1 turn for the assistant.
 Return ONLY valid JSON in this exact format:
 [

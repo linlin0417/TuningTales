@@ -1,28 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MessageSquare, Users, Settings as SettingsIcon, Database, Play } from 'lucide-react'
 import { Settings } from './components/Settings'
 import { Characters } from './components/Characters'
 import { Generator } from './components/Generator'
 import { Mixer } from './components/Mixer'
+import { I18nProvider, useTranslation } from './i18n'
 import './App.css'
 
-function App() {
+function MainApp() {
   const [activeTab, setActiveTab] = useState('generator')
-
-  if (!window.ipcRenderer) {
-    return (
-      <div style={{ color: 'white', padding: '2rem' }}>
-        <h2>Electron IPC Error</h2>
-        <p>window.ipcRenderer is undefined. The preload script failed to load or this is not running in Electron.</p>
-      </div>
-    )
-  }
+  const { t } = useTranslation()
 
   const navItems = [
-    { id: 'generator', label: 'Generator', icon: <Play size={20} /> },
-    { id: 'characters', label: 'Characters', icon: <Users size={20} /> },
-    { id: 'mixer', label: 'Dataset Mixer', icon: <Database size={20} /> },
-    { id: 'settings', label: 'Settings', icon: <SettingsIcon size={20} /> },
+    { id: 'generator', label: t('nav.generator'), icon: <Play size={20} /> },
+    { id: 'characters', label: t('nav.characters'), icon: <Users size={20} /> },
+    { id: 'mixer', label: t('nav.mixer'), icon: <Database size={20} /> },
+    { id: 'settings', label: t('nav.settings'), icon: <SettingsIcon size={20} /> },
   ]
 
   return (
@@ -81,6 +74,35 @@ function App() {
         </div>
       </div>
     </div>
+  )
+}
+
+function App() {
+  const [initialLang, setInitialLang] = useState<'en' | 'tw' | null>(null)
+
+  useEffect(() => {
+    if (window.ipcRenderer) {
+      window.ipcRenderer.invoke('get-settings').then((data: any) => {
+        setInitialLang(data?.uiLanguage || 'en')
+      })
+    }
+  }, [])
+
+  if (!window.ipcRenderer) {
+    return (
+      <div style={{ color: 'white', padding: '2rem' }}>
+        <h2>Electron IPC Error</h2>
+        <p>window.ipcRenderer is undefined. The preload script failed to load or this is not running in Electron.</p>
+      </div>
+    )
+  }
+
+  if (!initialLang) return null // Wait for settings to load
+
+  return (
+    <I18nProvider initialLang={initialLang}>
+      <MainApp />
+    </I18nProvider>
   )
 }
 

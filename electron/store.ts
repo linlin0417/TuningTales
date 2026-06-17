@@ -12,6 +12,8 @@ export interface Settings {
   ollamaHost: string
   defaultProvider: 'ollama' | 'gemini' | 'openai'
   defaultModelName: string
+  uiLanguage: 'en' | 'tw'
+  generationLanguage: string
 }
 
 export interface Character {
@@ -35,7 +37,9 @@ export function getSettings(): Settings {
     geminiKey: '',
     ollamaHost: 'http://localhost:11434',
     defaultProvider: 'ollama',
-    defaultModelName: ''
+    defaultModelName: '',
+    uiLanguage: 'en',
+    generationLanguage: 'tw'
   }
 }
 

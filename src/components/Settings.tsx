@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from '../i18n'
 
 interface SettingsConfig {
   openaiKey: string
@@ -6,15 +7,20 @@ interface SettingsConfig {
   ollamaHost: string
   defaultProvider: 'ollama' | 'gemini' | 'openai'
   defaultModelName: string
+  uiLanguage: 'en' | 'tw'
+  generationLanguage: string
 }
 
 export function Settings() {
+  const { t, setLang } = useTranslation()
   const [settings, setSettings] = useState<SettingsConfig>({
     openaiKey: '',
     geminiKey: '',
     ollamaHost: 'http://localhost:11434',
     defaultProvider: 'ollama',
-    defaultModelName: ''
+    defaultModelName: '',
+    uiLanguage: 'en',
+    generationLanguage: 'tw'
   })
   const [loading, setLoading] = useState(true)
 
@@ -27,7 +33,8 @@ export function Settings() {
 
   const handleSave = () => {
     window.ipcRenderer.invoke('save-settings', settings).then(() => {
-      alert('Settings saved successfully!')
+      setLang(settings.uiLanguage)
+      alert(t('settings.saved'))
     })
   }
 
@@ -35,11 +42,33 @@ export function Settings() {
 
   return (
     <div>
-      <h2>API Settings</h2>
-      <p>Configure your connection to different LLM providers.</p>
+      <h2>{t('settings.title')}</h2>
+      <p>{t('settings.desc')}</p>
 
-      <div className="input-group">
-        <label>Default Provider</label>
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+        <div className="input-group" style={{ flex: 1 }}>
+          <label>{t('settings.ui_lang')}</label>
+          <select 
+            value={settings.uiLanguage}
+            onChange={e => setSettings({...settings, uiLanguage: e.target.value as 'en' | 'tw'})}
+          >
+            <option value="en">English (EN)</option>
+            <option value="tw">繁體中文 (TW)</option>
+          </select>
+        </div>
+        <div className="input-group" style={{ flex: 1 }}>
+          <label>{t('settings.gen_lang')}</label>
+          <select 
+            value={settings.generationLanguage}
+            onChange={e => setSettings({...settings, generationLanguage: e.target.value})}
+          >
+            <option value="tw">繁體中文 (TW)</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="input-group" style={{ marginTop: '1rem' }}>
+        <label>{t('settings.provider')}</label>
         <select 
           value={settings.defaultProvider}
           onChange={e => setSettings({...settings, defaultProvider: e.target.value as any})}
@@ -51,7 +80,7 @@ export function Settings() {
       </div>
 
       <div className="input-group">
-        <label>Default Model Name (e.g., llama3:8b, gemini-1.5-pro, gpt-4o)</label>
+        <label>{t('settings.model_name')}</label>
         <input 
           type="text" 
           value={settings.defaultModelName}
@@ -63,7 +92,7 @@ export function Settings() {
       <div style={{ marginTop: '2rem' }}>
         <h3>Ollama Configuration</h3>
         <div className="input-group">
-          <label>Host URL</label>
+          <label>{t('settings.ollama_host')}</label>
           <input 
             type="text" 
             value={settings.ollamaHost}
@@ -76,7 +105,7 @@ export function Settings() {
       <div style={{ marginTop: '2rem' }}>
         <h3>API Keys</h3>
         <div className="input-group">
-          <label>Gemini API Key</label>
+          <label>{t('settings.gemini_key')}</label>
           <input 
             type="password" 
             value={settings.geminiKey}
@@ -85,7 +114,7 @@ export function Settings() {
           />
         </div>
         <div className="input-group">
-          <label>OpenAI API Key</label>
+          <label>{t('settings.openai_key')}</label>
           <input 
             type="password" 
             value={settings.openaiKey}
@@ -95,7 +124,7 @@ export function Settings() {
         </div>
       </div>
 
-      <button onClick={handleSave} style={{ marginTop: '1rem' }}>Save Settings</button>
+      <button onClick={handleSave} style={{ marginTop: '1rem' }}>{t('settings.save')}</button>
     </div>
   )
 }

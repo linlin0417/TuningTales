@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import { useTranslation } from '../i18n'
 
 export interface Character {
   id: string
@@ -10,6 +11,7 @@ export interface Character {
 }
 
 export function Characters() {
+  const { t } = useTranslation()
   const [characters, setCharacters] = useState<Character[]>([])
   const [editingChar, setEditingChar] = useState<Character | null>(null)
   
@@ -41,55 +43,55 @@ export function Characters() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Character Library</h2>
+        <h2>{t('char.library')}</h2>
         {!editingChar && (
           <button onClick={() => setEditingChar({ id: '', name: '', systemPrompt: '', personality: '', exampleDialogues: '' })}>
-            Create New Character
+            {t('char.create')}
           </button>
         )}
       </div>
 
       {editingChar ? (
         <div style={{ marginTop: '1rem', padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
-          <h3>{editingChar.id ? 'Edit Character' : 'New Character'}</h3>
+          <h3>{editingChar.id ? t('char.edit') : t('char.new')}</h3>
           <div className="input-group">
-            <label>Name</label>
+            <label>{t('char.name')}</label>
             <input 
               value={editingChar.name} 
               onChange={e => setEditingChar({...editingChar, name: e.target.value})} 
-              placeholder="E.g., Alice (Tech Support)"
+              placeholder={t('char.name_placeholder')}
             />
           </div>
           <div className="input-group">
-            <label>System Prompt (Core Persona)</label>
+            <label>{t('char.system_prompt')}</label>
             <textarea 
               rows={4}
               value={editingChar.systemPrompt} 
               onChange={e => setEditingChar({...editingChar, systemPrompt: e.target.value})} 
-              placeholder="You are Alice, a helpful tech support..."
+              placeholder={t('char.system_prompt_placeholder')}
             />
           </div>
           <div className="input-group">
-            <label>Personality / Guidelines</label>
+            <label>{t('char.personality')}</label>
             <textarea 
               rows={3}
               value={editingChar.personality} 
               onChange={e => setEditingChar({...editingChar, personality: e.target.value})} 
-              placeholder="Be polite, sometimes make programming jokes."
+              placeholder={t('char.personality_placeholder')}
             />
           </div>
           <div className="input-group">
-            <label>Example Dialogues</label>
+            <label>{t('char.examples')}</label>
             <textarea 
               rows={4}
               value={editingChar.exampleDialogues} 
               onChange={e => setEditingChar({...editingChar, exampleDialogues: e.target.value})} 
-              placeholder="User: Help me! AI: Did you try turning it off and on again?"
+              placeholder={t('char.examples_placeholder')}
             />
           </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <button onClick={handleSave}>Save</button>
-            <button className="secondary" onClick={() => setEditingChar(null)}>Cancel</button>
+            <button onClick={handleSave}>{t('char.save')}</button>
+            <button className="secondary" onClick={() => setEditingChar(null)}>{t('char.cancel')}</button>
           </div>
         </div>
       ) : (
@@ -101,12 +103,12 @@ export function Characters() {
                 {char.systemPrompt}
               </p>
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-                <button className="secondary" style={{ flex: 1 }} onClick={() => setEditingChar(char)}>Edit</button>
-                <button className="danger" onClick={() => handleDelete(char.id)}>Delete</button>
+                <button className="secondary" style={{ flex: 1 }} onClick={() => setEditingChar(char)}>{t('char.btn_edit')}</button>
+                <button className="danger" onClick={() => handleDelete(char.id)}>{t('char.btn_delete')}</button>
               </div>
             </div>
           ))}
-          {characters.length === 0 && <p>No characters found. Create one to get started!</p>}
+          {characters.length === 0 && <p>{t('char.no_chars')}</p>}
         </div>
       )}
     </div>

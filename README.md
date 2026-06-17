@@ -1,73 +1,37 @@
-# React + TypeScript + Vite
+# TuningTales
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[English](README.md) | [繁體中文](README-TW.md)
 
-Currently, two official plugins are available:
+TuningTales is a lightweight desktop application built for generating and managing fine-tuning datasets for conversational AI models like LLaMA, Qwen, and Gemini.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
+- 🤖 **Multiple LLM Providers**: Native support for Ollama (local), Gemini API, and OpenAI API.
+- 🎭 **Character Library**: Create and store different AI character personas, including system prompts and personality traits.
+- 📝 **Plan-based Looping Generator**: Feed a dialogue plan outline, and the engine automatically advances plot points to generate up to thousands of lines of coherent conversation. Uses a sliding window to prevent model looping or forgetting context.
+- 📦 **OpenAI Chat Format**: Generates and exports datasets in the industry-standard JSONL format for direct fine-tuning.
+- 🎛️ **Modern GUI**: Built with Electron, Vite, React, and a glassmorphism dark-mode UI.
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Development
+1. Install dependencies:
+```bash
+npm install
+```
+2. Start the local dev server and Electron window:
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Build
+Build the executable for your local platform:
+```bash
+npm run build
 ```
+
+## Tech Stack
+- Frontend: React + Vite + TypeScript + Vanilla CSS
+- Backend: Electron Main Process (Node.js)
+
+## License
+MIT License

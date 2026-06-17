@@ -4,9 +4,6 @@ import { fileURLToPath } from 'node:url'
 import { getSettings, saveSettings, getCharacters, saveCharacters } from './store'
 import { generateDialogue } from './generator'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
 // The built directory structure
 //
 // ├─┬─┬ dist
@@ -16,7 +13,10 @@ const __dirname = path.dirname(__filename)
 // │ │ ├── main.js
 // │ │ └── preload.js
 // │
-process.env.DIST = path.join(__dirname, '../dist')
+const _filename = fileURLToPath(import.meta.url)
+const _dirname = path.dirname(_filename)
+
+process.env.DIST = path.join(_dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
 let win: BrowserWindow | null
@@ -27,7 +27,7 @@ function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC || '', 'electron-vite.svg'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(_dirname, 'preload.js'),
     },
     width: 1200,
     height: 800,

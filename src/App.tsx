@@ -9,6 +9,15 @@ import './App.css'
 function App() {
   const [activeTab, setActiveTab] = useState('generator')
 
+  if (!window.ipcRenderer) {
+    return (
+      <div style={{ color: 'white', padding: '2rem' }}>
+        <h2>Electron IPC Error</h2>
+        <p>window.ipcRenderer is undefined. The preload script failed to load or this is not running in Electron.</p>
+      </div>
+    )
+  }
+
   const navItems = [
     { id: 'generator', label: 'Generator', icon: <Play size={20} /> },
     { id: 'characters', label: 'Characters', icon: <Users size={20} /> },
